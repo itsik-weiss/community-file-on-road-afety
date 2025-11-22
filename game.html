@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק מבחוכים - זהירות בדרכים</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .game-header h1 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .game-header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .game-stats span {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .game-message {
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #27ae60;
+            margin: 20px 0;
+            min-height: 40px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 10px;
+        }
+
+        .memory-game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            direction: rtl;
+            min-height: 120px;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .memory-card.flipped {
+            background: white;
+            color: #2c3e50;
+            border: 4px solid #3498db;
+            overflow: hidden;
+        }
+
+        .memory-card.matched {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            cursor: default;
+            animation: matchPulse 0.5s ease;
+        }
+
+        @keyframes matchPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .memory-card .card-back {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .memory-card .card-front {
+            font-size: 0.75em;
+            text-align: center;
+            padding: 5px;
+            line-height: 1.1;
+            font-weight: bold;
+            direction: rtl;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            max-width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        .game-button {
+            display: block;
+            margin: 25px auto 10px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .game-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 1em;
+        }
+
+        .back-link:hover {
+            color: #3498db;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .game-container {
+                padding: 25px;
+            }
+            
+            .memory-game-board {
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .game-container {
+                padding: 20px;
+            }
+            
+            .game-header h1 {
+                font-size: 1.8em;
+            }
+            
+            .game-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .game-stats span {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .memory-game-board {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .memory-card {
+                min-height: 100px;
+            }
+            
+            .memory-card .card-front {
+                font-size: 0.7em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .game-container {
+                padding: 15px;
+            }
+            
+            .game-header h1 {
+                font-size: 1.5em;
+            }
+            
+            .game-header p {
+                font-size: 1em;
+            }
+            
+            .game-stats {
+                font-size: 1em;
+            }
+            
+            .game-stats span {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+            
+            .memory-game-board {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .memory-card {
+                min-height: 90px;
+                font-size: 2em;
+            }
+            
+            .memory-card .card-back {
+                font-size: 1.5em;
+            }
+            
+            .memory-card .card-front {
+                font-size: 0.65em;
+                padding: 3px;
+                line-height: 1.1;
+            }
+            
+            .game-button {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
+            
+            .game-message {
+                font-size: 1.1em;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🎮 משחק מבחוכים</h1>
+            <p>התאם כלל בטיחות לאיור שלו</p>
+        </div>
+
+        <div class="game-stats">
+            <span>ניסיונות: <span id="moves">0</span></span>
+            <span>זוגות נמצאו: <span id="matches">0</span>/8</span>
+        </div>
+
+        <div class="game-message" id="gameMessage"></div>
+
+        <div class="memory-game-board" id="gameBoard"></div>
+
+        <button class="game-button" onclick="resetGame()">🔄 התחל משחק חדש</button>
+        
+        <a href="index.html" class="back-link">← חזרה לפוסטר</a>
+    </div>
+
+    <script>
+        // Memory Game Data
+        const gamePairs = [
+            { text: 'חובה לחצות במעבר חצייה', icon: '🚶‍♂️' },
+            { text: 'להביט ימינה ושמאלה', icon: '👀' },
+            { text: 'ללבוש אפוד זוהר', icon: '🦺' },
+            { text: 'ללבוש קסדה', icon: '🪖' },
+            { text: 'לא לשחק בכביש', icon: '🚫' },
+            { text: 'להיכנס לרכב מהדלת הקרובה', icon: '🚗' },
+            { text: 'להיות קשובים לסביבה', icon: '👂' },
+            { text: 'להמתין באוטובוס על המדרכה', icon: '🚌' }
+        ];
+
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let gameStarted = false;
+
+        // Initialize game
+        function initGame() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = '';
+            matchedPairs = 0;
+            moves = 0;
+            flippedCards = [];
+            gameStarted = false;
+            updateStats();
+
+            // Create card pairs
+            cards = [];
+            gamePairs.forEach((pair, index) => {
+                cards.push({ id: index * 2, type: 'text', content: pair.text, pairId: index });
+                cards.push({ id: index * 2 + 1, type: 'icon', content: pair.icon, pairId: index });
+            });
+
+            // Shuffle cards
+            cards = shuffleArray(cards);
+
+            // Create card elements
+            cards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'memory-card';
+                cardElement.dataset.id = card.id;
+                cardElement.dataset.pairId = card.pairId;
+                cardElement.dataset.type = card.type;
+                
+                const cardBack = document.createElement('div');
+                cardBack.className = 'card-back';
+                cardBack.textContent = '?';
+                
+                const cardFront = document.createElement('div');
+                cardFront.className = 'card-front';
+                cardFront.textContent = card.content;
+                cardFront.style.display = 'none';
+                
+                cardElement.appendChild(cardBack);
+                cardElement.appendChild(cardFront);
+                cardElement.addEventListener('click', () => flipCard(cardElement));
+                board.appendChild(cardElement);
+            });
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function flipCard(cardElement) {
+            if (cardElement.classList.contains('flipped') || 
+                cardElement.classList.contains('matched') || 
+                flippedCards.length >= 2) {
+                return;
+            }
+
+            if (!gameStarted) {
+                gameStarted = true;
+            }
+
+            cardElement.classList.add('flipped');
+            const cardBack = cardElement.querySelector('.card-back');
+            const cardFront = cardElement.querySelector('.card-front');
+            cardBack.style.display = 'none';
+            cardFront.style.display = 'flex';
+
+            flippedCards.push(cardElement);
+
+            if (flippedCards.length === 2) {
+                moves++;
+                updateStats();
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            const pairId1 = card1.dataset.pairId;
+            const pairId2 = card2.dataset.pairId;
+            const type1 = card1.dataset.type;
+            const type2 = card2.dataset.type;
+
+            if (pairId1 === pairId2 && type1 !== type2) {
+                // Match found!
+                setTimeout(() => {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    matchedPairs++;
+                    flippedCards = [];
+                    updateStats();
+                    checkWin();
+                }, 500);
+            } else {
+                // No match
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    const cardBack1 = card1.querySelector('.card-back');
+                    const cardFront1 = card1.querySelector('.card-front');
+                    const cardBack2 = card2.querySelector('.card-back');
+                    const cardFront2 = card2.querySelector('.card-front');
+                    cardBack1.style.display = 'flex';
+                    cardFront1.style.display = 'none';
+                    cardBack2.style.display = 'flex';
+                    cardFront2.style.display = 'none';
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('matches').textContent = matchedPairs;
+        }
+
+        function checkWin() {
+            if (matchedPairs === gamePairs.length) {
+                const message = document.getElementById('gameMessage');
+                let winMessage = `🎉 כל הכבוד! השלמת את המשחק ב-${moves} ניסיונות!`;
+                
+                if (moves <= 12) {
+                    winMessage += ' 🌟 ביצוע מעולה!';
+                } else if (moves <= 20) {
+                    winMessage += ' 👍 עבודה טובה!';
+                } else {
+                    winMessage += ' 💪 המשך כך!';
+                }
+                
+                message.textContent = winMessage;
+                message.style.color = '#27ae60';
+            }
+        }
+
+        function resetGame() {
+            const message = document.getElementById('gameMessage');
+            message.textContent = '';
+            initGame();
+        }
+
+        // Initialize game on page load
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
+
